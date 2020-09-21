@@ -1,21 +1,39 @@
 import React, { FC, useMemo } from "react";
 import KioskLayout from "../UI/KioskLayout/KioskLayout";
 import FullScreenCarousel from "../UI/FullScreenCarousel/FullScreenCarousel";
-import useQuery from "../hooks/useQuery";
+import useDevice from "../hooks/useDevice";
 
-import { mockData, msDisplay1 } from "./mockdata";
+import {
+  mockData,
+  msDisplay1,
+  msDisplay9,
+  msDisplay6,
+  msPopupAussen,
+  msVitrineAllgemein,
+  msPopupInnen,
+} from "./mockdata";
 
 const useMockData = () => {
-  const query = useQuery();
+  const device = useDevice();
 
   return useMemo(() => {
-    switch (query?.device) {
+    switch (device) {
       case "ms-display1":
         return msDisplay1;
+      case "ms-display9":
+        return msDisplay9;
+      case "ms-popup-aussen":
+        return msPopupAussen;
+      case "ms-popup-innen":
+        return msPopupInnen;
+      case "ms-vitrine-allgemein":
+        return msVitrineAllgemein;
+      case "ms-display6":
+        return msDisplay6;
       default:
         return mockData;
     }
-  }, [query]);
+  }, [device]);
 };
 
 const Kiosk: FC = () => {

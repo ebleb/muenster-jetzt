@@ -1,15 +1,16 @@
 import os
 
+import dotenv
 import peewee
 from playhouse.postgres_ext import PostgresqlExtDatabase
 
-
+dotenv.load_dotenv()
 db = PostgresqlExtDatabase(
-    os.getenv('DB_NAME', 'muensterjetzt'),
-    user=os.getenv('DB_USER', 'postgres'),
-    password=os.getenv('DB_PASSWORD', 'pgpass'),
-    host=os.getenv('DB_HOST', 'localhost'),
-    port=os.getenv('DB_PORT', 5432),
+    os.getenv('DB_NAME'),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    host=os.getenv('DB_HOST'),
+    port=os.getenv('DB_PORT'),
 )
 
 
@@ -57,3 +58,11 @@ class Event(MJModel):
     performer = peewee.CharField(null=True)
     mode = peewee.CharField(null=True)
     organizer = peewee.ForeignKeyField(Organizer, null=True)
+
+
+class EventImage(MJModel):
+    id = peewee.AutoField()
+    event = peewee.ForeignKeyField(Event, backref='images')
+    url = peewee.CharField(max_length=4095)
+    description = peewee.CharField(max_length=4095, null=True)
+    source = peewee.CharField(max_length=1023, null=True)

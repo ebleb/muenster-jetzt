@@ -1,7 +1,8 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import clsx from "clsx";
 import SwiperCore, { Autoplay, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
+import useAutoplayResume from "../../hooks/useAutoplayResume";
 
 import "swiper/swiper.scss";
 import "swiper/components/navigation/navigation.scss";
@@ -13,15 +14,21 @@ import useKioskTracking from "../../hooks/useKioskTracking";
 SwiperCore.use([Autoplay, Navigation]);
 
 interface IFullScreenCarousel {
-  slides: IEvent[];
+  slides: ISlide[];
 }
 
 const FullScreenCarousel: FC<IFullScreenCarousel> = ({ slides }) => {
-  const { sendRequest: sendTrackingRequest, onSlide } = useKioskTracking();
+  const {
+    sendRequest: sendTrackingRequest,
+    onSlide: onSlideTracking,
+  } = useKioskTracking();
+  const [swiperInstance, setSwiperInstance] = useState<SwiperCore | null>(null);
+
+  const { startAutoplayResume, stopAutoplayResume } = useAutoplayResume(30000);
 
   return (
     <Swiper
-      autoplay={{ delay: 15000, disableOnInteraction: false }}
+      autoplay={{ delay: 15000, disableOnInteraction: true }}
       loop
       navigation={{
         nextEl: ".swiper-button-next",
@@ -29,9 +36,20 @@ const FullScreenCarousel: FC<IFullScreenCarousel> = ({ slides }) => {
       }}
       spaceBetween={40}
       onSlideChange={(state) => {
-        onSlide(state);
+        onSlideTracking(state);
+
+        startAutoplayResume(state);
+      }}
+      onAutoplayStop={(state) => {
+        startAutoplayResume(state);
+      }}
+      onAutoplayStart={() => {
+        stopAutoplayResume();
       }}
       allowTouchMove={false}
+      onSwiper={(swiper) => {
+        setSwiperInstance(swiper);
+      }}
     >
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
       <div
@@ -44,7 +62,14 @@ const FullScreenCarousel: FC<IFullScreenCarousel> = ({ slides }) => {
       />
       {slides.map((slide) => (
         <SwiperSlide key={slide.id} data-kiosk-slide-id={slide.id}>
-          <Slide {...slide} />
+          {({ isActive }: { isActive: boolean }) => (
+            <Slide
+              {...slide}
+              playing={isActive}
+              swiperInstance={swiperInstance}
+              stopAutoplayResume={stopAutoplayResume}
+            />
+          )}
         </SwiperSlide>
       ))}
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}

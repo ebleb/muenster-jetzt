@@ -1,19 +1,25 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { QRCode } from "react-qr-svg";
-import useQuery from "../../hooks/useQuery";
-
+import SwiperCore from "swiper";
 import styles from "./Slide.module.css";
+import IFrameSlide from "./IFrameSlide";
+import VideoSlide from "./VideoSlide";
+import { IStopAutoplayResume } from "../../hooks/useAutoplayResume";
 
-const buildUrl = (
-  externalUrl: string,
-  query: Record<string, string | boolean> | null
-): string => {
-  let url = `${window.location.origin}/qr/`;
-  if (query != null && query.device) {
-    url += `${query.device}/`;
-  }
-  url += `?url=${encodeURI(externalUrl)}`;
-  return url;
+interface ISlideComponent extends ISlide {
+  playing: boolean;
+  swiperInstance: SwiperCore | null;
+  stopAutoplayResume: IStopAutoplayResume;
+}
+
+const useQRURL: (externalUrl?: string) => string = (externalUrl) => {
+  return useMemo(() => {
+    if (!externalUrl) {
+      return "";
+    }
+
+    return `https://muenster-jetzt.de/qr/?url=${encodeURI(externalUrl)}`;
+  }, [externalUrl]);
 };
 
 const convertCssClass = function convertCssClass(
@@ -28,7 +34,7 @@ const convertCssClass = function convertCssClass(
   return className.map((x) => styles[x]).join(" ");
 };
 
-const Slide: FC<IEvent> = ({
+const Slide: FC<ISlideComponent> = ({
   imageUrl,
   title,
   subtitle,
@@ -36,29 +42,52 @@ const Slide: FC<IEvent> = ({
   externalUrl,
   style,
   cssClassNames,
+  iFrame,
+  video,
+  playing,
+  swiperInstance,
+  stopAutoplayResume,
 }) => {
-  const query = useQuery();
+  const qrUrl = useQRURL(externalUrl);
+
   return (
     <div className={convertCssClass(cssClassNames)} style={style}>
       <div className={styles.slideContainer}>
-        {imageUrl && (
-          <img alt={`Bild ${title}`} className={styles.image} src={imageUrl} />
-        )}
-        <div className={styles.slideDescription}>
-          {title && <h1 className={styles.title}>{title}</h1>}
-          {subtitle && <h4 className={styles.subTitle}>{subtitle}</h4>}
-          {description && (
-            <p className={styles.descriptionTxt}>{description}</p>
-          )}
-          {externalUrl && (
-            <div className={styles.qrContainer}>
-              <QRCode
-                value={buildUrl(externalUrl, query)}
-                className={styles.qr}
+        {iFrame || video ? (
+          <>
+            {iFrame?.url && <IFrameSlide iFrame={iFrame} title={title} />}
+            {video?.url && (
+              <VideoSlide
+                video={video}
+                playing={playing}
+                swiperInstance={swiperInstance}
+                stopAutoplayResume={stopAutoplayResume}
               />
+            )}
+          </>
+        ) : (
+          <>
+            {imageUrl && (
+              <img
+                alt={`Bild ${title}`}
+                className={styles.image}
+                src={imageUrl}
+              />
+            )}
+            <div className={styles.slideDescription}>
+              {title && <h1 className={styles.title}>{title}</h1>}
+              {subtitle && <h4 className={styles.subTitle}>{subtitle}</h4>}
+              {description && (
+                <p className={styles.descriptionTxt}>{description}</p>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
+        {externalUrl && (
+          <div className={styles.qrContainer}>
+            <QRCode value={qrUrl} className={styles.qr} />
+          </div>
+        )}
       </div>
     </div>
   );

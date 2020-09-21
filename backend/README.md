@@ -3,23 +3,29 @@
 Based on [peewee](https://peewee-orm.com/), [Scrapy](https://scrapy.org/), and
 [FastAPI](https://fastapi.tiangolo.com/).
 
+
 ## Development Quickstart
 
 1. Copy `.env.example` to `.env` and edit it to match your local setup.
-2. Run `python -m virtualenv .venv && .venv/bin/activate` to create an activate
-   a virtual environment for Python packages.
+2. Create and activate a virtual environment. e.g. with: `python -m virtualenv .venv && .venv/bin/activate`
 
-   (Whenever you want to develop, run `.venv/bin/activate` to activate the
-   existing environment.)
-3. Install all dependencies via `pip install -r requirements.txt`.
+   Run only `.venv/bin/activate` to activate an existing environment
+
+3. Install all dependencies via `pip install -r requirements.txt`
 4. Run `python -m mj migrate` to migrate your database.
 5. Run `python -m mj crawl` to crawl events and store them in your database.
 6. Run `python -m mj serve` to start the API.
 
 
+# Database schema
+
+The database schema is managed via [peewee](https://peewee-orm.com/) and [peewee_migrate](https://github.com/klen/peewee_migrate/). If you need to alter it, just add a new model to `mj.db` (or edit an existing one) and run `python -m mj makemigrations` to create a new migration.
+
+
 ## Naming Convention
 
 Whenever you need to name a property, try to use the name that is used in https://schema.org/ e.g. for events take a look at: https://schema.org/Event
+
 
 ## Dependency management
 

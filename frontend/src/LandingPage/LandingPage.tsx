@@ -12,6 +12,11 @@ import c4mLogo from "../images/logo_code4ms.png";
 import githubLogo from "../images/logo_github.png";
 import mshackLogo from "../images/logo_muensterhack.png";
 import bahnLogo from "../images/logo_db_gobeta.svg";
+import { makeAppRouteLink } from "../utils/routes";
+
+const backendBasePath =
+  process?.env?.REACT_APP_BACKEND_BASE_PATH || "http://localhost:8000";
+const apiDocs = new URL("/docs", backendBasePath);
 
 const LandingPage: FC = () => (
   <Layout hideHeader>
@@ -32,13 +37,19 @@ const LandingPage: FC = () => (
       </div>
     </div>
     <div className={styles.row}>
-      <Box title="App" linkText="Zur App" linkTo="/app" preview>
+      <Box title="App" linkText="Zur App" linkTo={makeAppRouteLink()} preview>
         Mit der App verpasst du keine Veranstaltung mehr. Egal ob auf deinem
         Handy, Tablet oder Laptop, die{" "}
         <span className={styles.styledName}>Münster Jetzt</span> App ist einfach
         immer dabei.
       </Box>
-      <Box title="API" linkText="Bald" linkTo="/api-docs" disabled>
+      <Box
+        title="API"
+        linkText="Dokumentation"
+        linkTo={{ pathname: apiDocs.href }}
+        target="_blank"
+        preview
+      >
         Für Alle, die schnell und einfach maschinen&shy;lesbare
         Veranstaltungs&shy;informationen brauchen.
       </Box>
@@ -46,6 +57,43 @@ const LandingPage: FC = () => (
         Die Kiosk-Ansicht ist für große Displays geeignet und zeigt
         Informationen zu ausgewählten Veranstaltungen.
       </Box>
+    </div>
+    <div className={styles.row}>
+      <div className={styles.actionColumn}>
+        <h3 className={styles.rowTitle}>Datenquellen</h3>
+        <ul className={styles.dataSources}>
+          <li>
+            <span role="img" aria-label="Häkchen">
+              ✅
+            </span>
+            Münster Jetzt
+          </li>
+          <li>
+            <span role="img" aria-label="Häkchen">
+              ✅
+            </span>
+            <a
+              href="https://www.muensterland.digital/api"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              münsterLand.digital
+            </a>
+          </li>
+          <li>
+            <span role="img" aria-label="Häkchen">
+              ✅
+            </span>
+            <a
+              href="https://www.datenportal-muensterland.de"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Datenportal Münsterland (Münsterland e.V.)
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
     <div className={styles.row}>
       <div className={styles.actionColumn}>
