@@ -85,6 +85,18 @@ const LandingPage: FC = () => (
               ✅
             </span>
             <a
+              href="https://gobeta.de/alle-veranstaltungen/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              DB gobeta
+            </a>
+          </li>
+          <li>
+            <span role="img" aria-label="Häkchen">
+              ✅
+            </span>
+            <a
               href="https://www.datenportal-muensterland.de"
               target="_blank"
               rel="noopener noreferrer"
